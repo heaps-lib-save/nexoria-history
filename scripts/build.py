@@ -18,11 +18,24 @@ for e in events:
         parts.append(f'<h2 class="year-heading" id="year-{year}"><span>{year}</span><small>开发记录</small></h2>')
     dt = datetime.fromisoformat(e['date'])
     images = []
-    for n in e['images']:
+    for item in e['images']:
+        n = item['file'] if isinstance(item, dict) else item
+        crop = item.get('crop') if isinstance(item, dict) else None
         filename = f'assets/image{n}.jpeg' if isinstance(n, int) else f'assets/{n}'
         assert (ROOT / filename).is_file(), filename
-        label = f"{e['title']} · {'图标' if n == e.get('icon') else '原始记录'}"
-        images.append(f'<a class="image-link {"icon-image" if n == e.get("icon") else ""}" href="{filename}" data-caption="{escape(label)}" aria-label="查看{escape(label)}"><img src="{filename}" alt="{escape(label)}" loading="lazy" width="180" height="144"><span>{"图标" if n == e.get("icon") else "原图"} ↗</span></a>')
+        label = f"{e['title']} · {'消息节选' if crop else '图标' if n == e.get('icon') else '原始记录'}"
+        attrs = ''
+        extra_class = 'icon-image' if n == e.get('icon') else ''
+        picture = f'<img src="{filename}" alt="{escape(label)}" loading="lazy" width="180" height="144">'
+        if crop:
+            assert crop['width'] > 0 and crop['height'] > 0 and crop['y'] >= 0
+            ratio = f'{crop["width"]}/{crop["height"]}'
+            offset = f'{-crop["y"] / crop["height"] * 100:.6f}%'
+            attrs = f' data-crop-ratio="{ratio}" data-crop-offset="{offset}" style="--slice-ratio:{ratio};--slice-top:{offset}"'
+            extra_class = 'slice-link'
+            picture = f'<span class="image-slice">{picture}</span>'
+        badge = '消息节选' if crop else '图标' if n == e.get('icon') else '原图'
+        images.append(f'<a class="image-link {extra_class}" href="{filename}" data-caption="{escape(label)}" aria-label="查看{escape(label)}"{attrs}>{picture}<span>{badge} ↗</span></a>')
     note = f'<p class="record-note">{escape(e["note"])}</p>' if e.get('note') else ''
     media = f'<div class="event-images">{"".join(images)}</div>' if images else ''
     video = ''
@@ -39,7 +52,7 @@ for e in events:
 template = (ROOT / 'scripts/page.html').read_text(encoding='utf-8')
 year_counts = Counter(e['date'][:4] for e in events)
 year_nav = ''.join(f'<a href="#year-{y}">{y} <span>{n:02d}</span></a>' for y, n in sorted(year_counts.items()))
-image_count = len({n for e in events for n in e['images']})
+image_count = len({item['file'] if isinstance(item, dict) else item for e in events for item in e['images']})
 video_count = sum(bool(e.get('video')) for e in events)
 page = template.replace('<!-- EVENTS -->', '\n'.join(parts)).replace('{{COUNT}}', str(len(events))).replace('{{IMAGE_COUNT}}', str(image_count)).replace('{{VIDEO_COUNT}}', str(video_count)).replace('<!-- YEAR NAV -->', year_nav)
 page = re.sub(r'<a(?=\s)(?![^>]*\bclass="image-link\b)(?![^>]*\bdraggable=)', '<a draggable="false"', page)

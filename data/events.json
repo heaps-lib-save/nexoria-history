@@ -1,7 +1,7 @@
 [
   {"id":"first-heaps","date":"2025-05-01","time":"21:35:24","title":"第一次提到 Heaps","category":"起点","text":"开发记录从一次关于 Heaps 的讨论开始。","source":"第一次提到heaps","images":[1]},
-  {"id":"prototype-build","date":"2026-04-03","time":"12:48:26","title":"原型程序编译成功","category":"原型","text":"原型程序完成编译，开发进入可以运行和验证的阶段。聊天截图留存了 12:48 的运行画面与编译成功后的讨论。","source":"原型程序编译成功","images":[2]},
-  {"id":"beap-prototype","date":"2026-04-03","time":"13:57:25","title":"beap 原型构造","category":"原型","text":"搭建 beap 原型。留存的截图展示了编辑器中的代码与紫色星空运行窗口。","source":"beap原型构造","images":[3]},
+  {"id":"prototype-build","date":"2026-04-03","time":"12:48:26","title":"原型程序编译成功","category":"原型","text":"原型程序完成编译。12:48 的两条消息分别展示了程序运行画面，并感叹「编译一次也太麻烦了」。","source":"原型程序编译成功；截图消息：编译一次也太麻烦了","images":[{"file":2,"crop":{"width":1080,"y":140,"height":790}},3]},
+  {"id":"beap-prototype","date":"2026-04-03","time":"13:57:25","title":"beap 原型构造","category":"原型","text":"13:57 的消息「正在手搓lime替代品」记录了 beap 原型的构造过程。","source":"beap原型构造；截图消息：正在手搓lime替代品","images":[{"file":2,"crop":{"width":1080,"y":930,"height":645}}],"note":"这条消息所附的图片已失效，现保留消息截图。"},
   {"id":"prototype-test","date":"2026-04-03","time":"16:31:26","title":"beap 原型初测成功","category":"原型","text":"原型完成初次测试。除原文留存的聊天截图外，现已补充测试视频，可直接播放查看运行过程。","source":"beap原型初测成功","images":[4],"video":"beap-prototype-test.mp4"},
   {"id":"sdl2-android","date":"2026-04-26","time":"10:32:13","title":"SDL2 在 Android 上跑通","category":"Android","text":"SDL2 的 Android 运行验证成功，原记录保留了调试过程与手机端运行画面。","source":"sdl2安卓跑通","images":[5]},
   {"id":"sdl3-windows","date":"2026-05-02","time":"12:42:54","title":"Windows 成功支持 SDL3","category":"Windows","text":"SDL3 的 Windows 支持完成验证。补充的聊天截图留存了成功消息与桌面端渲染画面。","source":"ok windows成功支持sdl3","images":["windows-sdl3.png"]},

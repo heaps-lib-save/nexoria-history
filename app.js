@@ -32,11 +32,20 @@
   if (typeof viewer.showModal === 'function') {
     let lastLink;
     const image = document.querySelector('#full-image');
+    const frame = document.querySelector('#image-frame');
+    const original = document.querySelector('#viewer-original');
     document.querySelectorAll('.image-link').forEach(link => link.addEventListener('click', event => {
       event.preventDefault();
       lastLink = link;
       image.src = link.href;
       image.alt = link.dataset.caption;
+      const cropped = !!link.dataset.cropRatio;
+      frame.classList.toggle('cropped-frame', cropped);
+      frame.style.setProperty('--slice-ratio', link.dataset.cropRatio || 'auto');
+      frame.style.setProperty('--slice-top', link.dataset.cropOffset || '0%');
+      original.hidden = !cropped;
+      original.href = link.href;
+      document.querySelector('#viewer-hint-text').textContent = `${cropped ? '消息节选' : '完整原图'} · 按 Esc 关闭`;
       document.querySelector('#viewer-caption').textContent = link.dataset.caption;
       viewer.showModal();
       document.body.classList.add('viewer-open');
