@@ -1,5 +1,6 @@
 """Build the static archive using only the Python standard library."""
 import json
+import re
 from pathlib import Path
 from html import escape
 from datetime import datetime
@@ -41,5 +42,6 @@ year_nav = ''.join(f'<a href="#year-{y}">{y} <span>{n:02d}</span></a>' for y, n 
 image_count = len({n for e in events for n in e['images']})
 video_count = sum(bool(e.get('video')) for e in events)
 page = template.replace('<!-- EVENTS -->', '\n'.join(parts)).replace('{{COUNT}}', str(len(events))).replace('{{IMAGE_COUNT}}', str(image_count)).replace('{{VIDEO_COUNT}}', str(video_count)).replace('<!-- YEAR NAV -->', year_nav)
+page = re.sub(r'<a(?=\s)(?![^>]*\bclass="image-link\b)(?![^>]*\bdraggable=)', '<a draggable="false"', page)
 (ROOT / 'index.html').write_text(page, encoding='utf-8')
 print(f'Built index.html: {len(events)} events, {image_count} images, {video_count} videos.')
