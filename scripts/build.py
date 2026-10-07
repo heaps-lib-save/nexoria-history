@@ -8,7 +8,7 @@ from collections import Counter
 
 ROOT = Path(__file__).resolve().parent.parent
 events = json.loads((ROOT / 'data/events.json').read_text(encoding='utf-8'))
-events.sort(key=lambda e: (e['date'], e['time']))
+events.sort(key=lambda e: (e['date'], e.get('time') or '24:00'))
 assert len({e['id'] for e in events}) == len(events), 'Duplicate event IDs'
 parts = []
 year = None
@@ -17,6 +17,8 @@ for e in events:
         year = e['date'][:4]
         parts.append(f'<h2 class="year-heading" id="year-{year}"><span>{year}</span><small>开发记录</small></h2>')
     dt = datetime.fromisoformat(e['date'])
+    timestamp = f'{e["date"]}T{e["time"]}' if e.get('time') else e['date']
+    time_label = e.get('time') or '时间未知'
     images = []
     for item in e['images']:
         n = item['file'] if isinstance(item, dict) else item
@@ -44,7 +46,7 @@ for e in events:
         assert (ROOT / filename).is_file(), filename
         video = f'''<figure class="event-video"><video controls playsinline preload="metadata" aria-label="{escape(e['title'])}测试视频"><source src="{escape(filename)}" type="video/mp4"><p>浏览器不支持视频播放，请<a href="{escape(filename)}">打开原视频</a>。</p></video><figcaption><span>原型初测录像</span><a href="{escape(filename)}" download>下载视频 ↓</a></figcaption></figure>'''
     parts.append(f'''<article class="event" id="{e['id']}" data-category="{escape(e['category'])}" data-year="{year}">
-      <div class="event-date"><time datetime="{e['date']}T{e['time']}"><span>{dt:%m.%d}</span><small>{e['time']}</small></time></div>
+      <div class="event-date"><time datetime="{timestamp}"><span>{dt:%m.%d}</span><small>{time_label}</small></time></div>
       <div class="event-body"><span class="category">{escape(e['category'])}</span><h3><a href="#{e['id']}">{escape(e['title'])}</a></h3><p>{escape(e['text'])}</p>{note}{media}{video}
         <details class="source"><summary>查看原文记录</summary><p>{escape(e['source'])}</p></details>
       </div>
