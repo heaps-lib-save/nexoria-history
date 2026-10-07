@@ -8,3 +8,6 @@
 .event-body>p{font-size:14px}.event-body .record-note{font-size:11px}.source{font-size:11px}.about p:not(.eyebrow){font-size:14px}.search-field input{font-size:13px}.filters button{font-size:12px}
 @media(max-width:720px){.event-body>p{font-size:13px}.event-body .record-note{font-size:11px}.event-date small{font-size:9px}.source{font-size:10px}.about p:not(.eyebrow){font-size:13px}.hero-description{font-size:12px}.filters button{font-size:11px;padding-inline:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important}}
+
+.event-video{margin:20px 0 0;max-width:600px}.event-video video{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;border-radius:5px;background:#17131c;border:1px solid #ddd6e0}.event-video figcaption{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:8px;font-size:11px;color:var(--muted)}.event-video figcaption a{color:var(--purple)}.overview .overview-count{flex-wrap:wrap}
+
