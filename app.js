@@ -1,6 +1,7 @@
 (() => {
   'use strict';
   const events = [...document.querySelectorAll('.event')];
+  const eventTags = new Map(events.map(event => [event, JSON.parse(event.dataset.tags)]));
   const buttons = [...document.querySelectorAll('[data-filter]')];
   const search = document.querySelector('#search');
   const status = document.querySelector('#result-status');
@@ -11,7 +12,7 @@
     const query = search.value.trim().toLocaleLowerCase();
     let count = 0;
     for (const event of events) {
-      const match = (selected === '全部' || event.dataset.category === selected) && event.textContent.toLocaleLowerCase().includes(query);
+      const match = (selected === '全部' || eventTags.get(event).includes(selected)) && event.textContent.toLocaleLowerCase().includes(query);
       event.hidden = !match;
       if (match) count++;
     }

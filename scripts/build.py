@@ -19,6 +19,11 @@ for e in events:
     dt = datetime.fromisoformat(e['date'])
     timestamp = f'{e["date"]}T{e["time"]}' if e.get('time') else e['date']
     time_label = e.get('time') or '时间未知'
+    tags = e['tags']
+    assert isinstance(tags, list) and tags and all(isinstance(t, str) and t.strip() for t in tags), e['id']
+    assert len(tags) == len(set(tags)), e['id']
+    tag_data = escape(json.dumps(tags, ensure_ascii=False), quote=True)
+    tag_labels = ''.join(f'<span class="event-tag" role="listitem">{escape(t)}</span>' for t in tags)
     images = []
     for item in e['images']:
         n = item['file'] if isinstance(item, dict) else item
@@ -45,9 +50,9 @@ for e in events:
         filename = f'assets/{e["video"]}'
         assert (ROOT / filename).is_file(), filename
         video = f'''<figure class="event-video"><video controls playsinline preload="metadata" aria-label="{escape(e['title'])}测试视频"><source src="{escape(filename)}" type="video/mp4"><p>浏览器不支持视频播放，请<a href="{escape(filename)}">打开原视频</a>。</p></video><figcaption><span>原型初测录像</span><a href="{escape(filename)}" download>下载视频 ↓</a></figcaption></figure>'''
-    parts.append(f'''<article class="event" id="{e['id']}" data-category="{escape(e['category'])}" data-year="{year}">
+    parts.append(f'''<article class="event" id="{e['id']}" data-tags="{tag_data}" data-year="{year}">
       <div class="event-date"><time datetime="{timestamp}"><span>{dt:%m.%d}</span><small>{time_label}</small></time></div>
-      <div class="event-body"><span class="category">{escape(e['category'])}</span><h3><a href="#{e['id']}">{escape(e['title'])}</a></h3><p>{escape(e['text'])}</p>{note}{media}{video}
+      <div class="event-body"><div class="event-tags" role="list" aria-label="事件标签">{tag_labels}</div><h3><a href="#{e['id']}">{escape(e['title'])}</a></h3><p>{escape(e['text'])}</p>{note}{media}{video}
         <details class="source"><summary>查看原文记录</summary><p>{escape(e['source'])}</p></details>
       </div>
     </article>''')
@@ -56,7 +61,11 @@ year_counts = Counter(e['date'][:4] for e in events)
 year_nav = ''.join(f'<a href="#year-{y}">{y} <span>{n:02d}</span></a>' for y, n in sorted(year_counts.items()))
 image_count = len({item['file'] if isinstance(item, dict) else item for e in events for item in e['images']})
 video_count = sum(bool(e.get('video')) for e in events)
-page = template.replace('<!-- EVENTS -->', '\n'.join(parts)).replace('{{COUNT}}', str(len(events))).replace('{{IMAGE_COUNT}}', str(image_count)).replace('{{VIDEO_COUNT}}', str(video_count)).replace('<!-- YEAR NAV -->', year_nav)
+available_tags = {tag for e in events for tag in e['tags']}
+preferred_order = ['起点', '原型', 'Windows', 'Android', 'SDL2', 'SDL3', 'Vulkan', '命名', '视觉']
+ordered_tags = [t for t in preferred_order if t in available_tags] + sorted(available_tags.difference(preferred_order))
+filters = '<button type="button" data-filter="全部" aria-pressed="true">全部</button>' + ''.join(f'<button type="button" data-filter="{escape(t)}" aria-pressed="false">{escape(t)}</button>' for t in ordered_tags)
+page = template.replace('<!-- EVENTS -->', '\n'.join(parts)).replace('{{COUNT}}', str(len(events))).replace('{{IMAGE_COUNT}}', str(image_count)).replace('{{VIDEO_COUNT}}', str(video_count)).replace('<!-- YEAR NAV -->', year_nav).replace('<!-- TAG FILTERS -->', filters)
 page = re.sub(r'<a(?=\s)(?![^>]*\bclass="image-link\b)(?![^>]*\bdraggable=)', '<a draggable="false"', page)
 (ROOT / 'index.html').write_text(page, encoding='utf-8')
 print(f'Built index.html: {len(events)} events, {image_count} images, {video_count} videos.')
